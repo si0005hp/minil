@@ -6,18 +6,21 @@ import lombok.Getter;
 import minil.NodeVisitor;
 
 @Getter
-public class ProgramNode extends Node {
-
-    private final List<StmtNode> stmts;
-    private final List<FuncDefNode> funcDefs;
+public final class FuncDefNode extends Node {
     
-    public ProgramNode(List<StmtNode> stmts, List<FuncDefNode> funcDefs) {
+    private final String fname;
+    private final List<String> args;
+    private final List<StmtNode> stmts;
+    
+    public FuncDefNode(String fname, List<String> args, List<StmtNode> stmts) {
+        this.fname = fname;
+        this.args = args;
         this.stmts = stmts;
-        this.funcDefs = funcDefs;
     }
     
     @Override
     public <T> T accept(NodeVisitor<T> v) {
         return v.visit(this);
     }
+    
 }

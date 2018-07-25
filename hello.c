@@ -1,6 +1,5 @@
-bar = 2 + 3 * 14 - 6;
+print(1);
 
-print(bar);
-
-def foo()
+def foo(a, b)
+	print(1);
 end

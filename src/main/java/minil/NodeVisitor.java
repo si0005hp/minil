@@ -1,6 +1,8 @@
 package minil;
 
 import minil.ast.BinOpNode;
+import minil.ast.FuncCallNode;
+import minil.ast.FuncDefNode;
 import minil.ast.IntNode;
 import minil.ast.LetNode;
 import minil.ast.PrintNode;
@@ -14,4 +16,6 @@ public interface NodeVisitor<T> {
     T visit(ProgramNode n);
     T visit(LetNode n);
     T visit(VarRefNode n);
+    T visit(FuncDefNode n);
+    T visit(FuncCallNode n);
 }

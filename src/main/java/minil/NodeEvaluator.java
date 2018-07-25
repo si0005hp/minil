@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import minil.ast.BinOpNode;
+import minil.ast.FuncCallNode;
+import minil.ast.FuncDefNode;
 import minil.ast.IntNode;
 import minil.ast.LetNode;
 import minil.ast.PrintNode;
@@ -47,6 +49,9 @@ public class NodeEvaluator implements NodeVisitor<Integer> {
 
     @Override
     public Integer visit(ProgramNode n) {
+        for (FuncDefNode f : n.getFuncDefs()) {
+            f.accept(this);
+        }
         for (StmtNode s : n.getStmts()) {
             s.accept(this);
         }
@@ -65,5 +70,16 @@ public class NodeEvaluator implements NodeVisitor<Integer> {
             throw new RuntimeException("Undefined var: " + n.getVname());
         }
         return varMap.get(n.getVname());
+    }
+
+    @Override
+    public Integer visit(FuncDefNode n) {
+        System.out.println("Compiling " + n.getFname());
+        return 0;
+    }
+
+    @Override
+    public Integer visit(FuncCallNode n) {
+        return null;
     }
 }
