@@ -5,6 +5,7 @@ import static minil.MinilParser.DIV;
 import static minil.MinilParser.MUL;
 import static minil.MinilParser.SUB;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

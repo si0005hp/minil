@@ -2,13 +2,17 @@ grammar Minil;
 
 @header {
 import minil.ast.*;
+import java.util.*;
 }
 
 @parser::members {
 }
 
 program returns [ProgramNode n]
-	: s=stmts[new ArrayList<StmtNode>()] f=funcDefs[new ArrayList<FuncDefNode>()] { $n = new ProgramNode($s.n, $f.n); }
+	: f=funcDefs[new ArrayList<FuncDefNode>()]? s=stmts[new ArrayList<StmtNode>()]? 
+	  {
+	  	$n = new ProgramNode($s.ctx == null ? Collections.emptyList() : $s.n, $f.ctx == null ? Collections.emptyList() : $f.n);
+	  }
 	;
 
 funcParams[List<String> ns] returns [List<String> n]
@@ -20,7 +24,10 @@ funcDefs[List<FuncDefNode> ns] returns [List<FuncDefNode> n]
 	;
 
 funcDef returns [FuncDefNode n]
-	: DEF IDT LPAREN a=funcParams[new ArrayList<String>()] RPAREN s=stmts[new ArrayList<StmtNode>()] END { $n = new FuncDefNode($IDT.text, $a.n, $s.n); }
+	: DEF IDT LPAREN a=funcParams[new ArrayList<String>()]? RPAREN s=stmts[new ArrayList<StmtNode>()] END
+	  {
+	  	$n = new FuncDefNode($IDT.text, $a.ctx == null ? Collections.emptyList() : $a.n, $s.n);
+	  }
 	;
 
 stmts[List<StmtNode> ns] returns [List<StmtNode> n]
@@ -28,9 +35,12 @@ stmts[List<StmtNode> ns] returns [List<StmtNode> n]
 	;
 
 stmt returns [StmtNode n]
-	: PRINT LPAREN expr RPAREN SEMICOLON   { $n = new PrintNode($expr.n); } // print
-	| var EQ expr SEMICOLON                { $n = new LetNode($var.text, $expr.n); } // let
-	| IDT LPAREN a=funcArgs[new ArrayList<ExprNode>()] RPAREN SEMICOLON { $n = new FuncCallNode($IDT.text, $a.n); } // funcCall
+	: PRINT LPAREN expr RPAREN   { $n = new PrintNode($expr.n); } // print
+	| var EQ expr                { $n = new LetNode($var.text, $expr.n); } // let
+	| IDT LPAREN a=funcArgs[new ArrayList<ExprNode>()]? RPAREN // funcCall
+	  {
+	  	$n = new FuncCallNode($IDT.text, $a.ctx == null ? Collections.emptyList() : $a.n); 
+	  }
 	;
 
 funcArgs[List<ExprNode> ns] returns [List<ExprNode> n]
