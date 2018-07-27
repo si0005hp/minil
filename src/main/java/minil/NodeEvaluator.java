@@ -5,7 +5,6 @@ import static minil.MinilParser.DIV;
 import static minil.MinilParser.MUL;
 import static minil.MinilParser.SUB;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +20,8 @@ import minil.ast.VarRefNode;
 
 public class NodeEvaluator implements NodeVisitor<Integer> {
 
-    private final Map<String, Integer> varMap = new HashMap<>();
+    private final Map<String, Integer> gVarMap = new HashMap<>();
+    private final Map<String, FuncDefNode> funcDefMap = new HashMap<>();
     
     @Override
     public Integer visit(IntNode n) {
@@ -61,26 +61,33 @@ public class NodeEvaluator implements NodeVisitor<Integer> {
 
     @Override
     public Integer visit(LetNode n) {
-        varMap.put(n.getVname(), n.getExpr().accept(this));
+        gVarMap.put(n.getVname(), n.getExpr().accept(this));
         return 0;
     }
     
     @Override
     public Integer visit(VarRefNode n) {
-        if (!varMap.containsKey(n.getVname())) {
+        if (!gVarMap.containsKey(n.getVname())) {
             throw new RuntimeException("Undefined var: " + n.getVname());
         }
-        return varMap.get(n.getVname());
+        return gVarMap.get(n.getVname());
     }
 
     @Override
     public Integer visit(FuncDefNode n) {
-        System.out.println("Compiling " + n.getFname());
+        funcDefMap.put(n.getFname(), n);
         return 0;
     }
 
     @Override
     public Integer visit(FuncCallNode n) {
-        return null;
+        if (!funcDefMap.containsKey(n.getFname())) {
+            throw new RuntimeException("Undefined function: " + n.getFname());
+        }
+        FuncDefNode f = funcDefMap.get(n.getFname());
+        for (StmtNode s : f.getStmts()) {
+            s.accept(this);
+        }
+        return 0;
     }
 }

@@ -3,16 +3,30 @@ grammar Minil;
 @header {
 import minil.ast.*;
 import java.util.*;
+import java.util.stream.*;
 }
 
 @parser::members {
 }
 
 program returns [ProgramNode n]
-	: f=funcDefs[new ArrayList<FuncDefNode>()]? s=stmts[new ArrayList<StmtNode>()]? 
+	: v=topLevels[new ArrayList<>()]?
 	  {
-	  	$n = new ProgramNode($s.ctx == null ? Collections.emptyList() : $s.n, $f.ctx == null ? Collections.emptyList() : $f.n);
+	  	List<StmtNode> stmts = new ArrayList<>();
+	  	List<FuncDefNode> funcDefs = new ArrayList<>();
+	  	if ($v.ctx != null) {
+	  		stmts = $v.n.stream().filter(n -> n instanceof StmtNode).map(StmtNode.class::cast).collect(Collectors.toList());
+	  		funcDefs = $v.n.stream().filter(n -> n instanceof FuncDefNode).map(FuncDefNode.class::cast).collect(Collectors.toList());
+	  	}
+	  	$n = new ProgramNode(stmts, funcDefs);
 	  }
+	;
+
+topLevels[List<Node> ns] returns [List<Node> n]
+	: (
+		funcDefs[new ArrayList<>()]  { $ns.addAll($funcDefs.n); } |
+		stmts[new ArrayList<>()]     { $ns.addAll($stmts.n); }
+	  )+ { $n = $ns; }
 	;
 
 funcParams[List<String> ns] returns [List<String> n]
