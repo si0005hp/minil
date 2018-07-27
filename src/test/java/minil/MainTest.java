@@ -8,33 +8,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.antlr.v4.runtime.CharStreams;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
 public class MainTest {
-
-    private ByteArrayOutputStream bos;
-    private PrintStream sysout;
-
-    @Before
-    public void setUp() {
-        bos = new ByteArrayOutputStream();
-        sysout = System.out;
-        System.setOut(new PrintStream(new BufferedOutputStream(bos)));
-    }
-
-    @After
-    public void tearDown() {
-        System.setOut(sysout);
-    }
+    
+    private static final String CR = System.lineSeparator();
 
     @Test
     public void arithmeticOpes() {
@@ -51,18 +38,41 @@ public class MainTest {
                 .put("1*2+3-4*5",-15)
                 .put("10/2",5)
                 .put("99/3/11",3)
-                .put("10/2*3+5-3+4*2/8",18)
+                .put("10/2*3+5-3+4*2/8",18) 
                 .build().entrySet().stream().collect(Collectors.toList());
         
-        testdata.stream().map(Entry::getKey).forEach(this::run);
-        System.out.flush();
+        String output = runAndGetSysout(() -> testdata.stream().map(Entry::getKey).forEach(this::run));
+        String expected = perNewLine(testdata.stream().map(Entry::getValue).collect(Collectors.toList()).toArray());
         
-        String expected = testdata.stream().map(Entry::getValue).map(String::valueOf)
-                .collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator();
-        
-        assertThat(bos.toString(), is(expected));
+        assertThat(output, is(expected));
     }
-
+    
+    @Test
+    public void var() {
+        assertThat(runAndGetSysout(() -> runF("var/var1.minil")), is(perNewLine(999, 7)));
+        assertThat(runAndGetSysout(() -> runF("var/var2.minil")), is(perNewLine(999, 7)));
+        assertThat(runAndGetSysout(() -> runF("var/var3.minil")), is(perNewLine(1006)));
+        assertThat(runAndGetSysout(() -> runF("var/var4.minil")), is(perNewLine(1028)));
+    }
+    
+    private String runAndGetSysout(Runnable r) {
+        PrintStream orgSysout = System.out;
+        
+        String result = null;
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                PrintStream ps = new PrintStream(new BufferedOutputStream(bos));) {
+            System.setOut(ps);
+            r.run();
+            System.out.flush();
+            result = bos.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            System.setOut(orgSysout);
+        }
+        return result;
+    }
+    
     private int run(String s) {
         String p = String.format("print(%s)", s);
         return Main.run(CharStreams.fromString(p));
@@ -75,4 +85,9 @@ public class MainTest {
             throw new RuntimeException("Failed to load file: " + s);
         }
     }
+    
+    private String perNewLine(Object... data) {
+        return Stream.of(data).map(String::valueOf).collect(Collectors.joining(CR)) + CR;
+    }
+    
 }
