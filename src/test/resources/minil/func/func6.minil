@@ -1,0 +1,8 @@
+def twice(price)
+	return price * 2
+end
+
+price = 1980
+
+total = twice(price)
+print(total)

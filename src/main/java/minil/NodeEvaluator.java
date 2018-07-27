@@ -18,6 +18,7 @@ import minil.ast.LetNode;
 import minil.ast.Node;
 import minil.ast.PrintNode;
 import minil.ast.ProgramNode;
+import minil.ast.ReturnNode;
 import minil.ast.StmtNode;
 import minil.ast.VarRefNode;
 
@@ -42,7 +43,7 @@ public class NodeEvaluator implements NodeVisitor<Integer> {
         case MUL: return l * r;
         case DIV: return l / r;
         }
-        throw new RuntimeException();
+        throw new RuntimeException("Illegal binop type: " + n.getOpType());
     }
 
     @Override
@@ -55,9 +56,19 @@ public class NodeEvaluator implements NodeVisitor<Integer> {
     @Override
     public Integer visit(ProgramNode n) {
         for (Node t : n.getTopLevels()) {
+            if (isIllegalTopLevel(t)) {
+                throw new RuntimeException("Illegal topLevel node: " + t);
+            }
             t.accept(this);
         }
         return 0;
+    }
+    
+    private boolean isIllegalTopLevel(Node n) {
+        if (n instanceof ReturnNode) {
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -113,10 +124,21 @@ public class NodeEvaluator implements NodeVisitor<Integer> {
         lVarMapStack.add(lVarMap);
         
         for (StmtNode s : f.getStmts()) {
-            s.accept(this);
+            if (s instanceof ReturnNode) {
+                int retVal = s.accept(this);
+                lVarMapStack.removeLast();
+                return retVal;
+            } else {
+                s.accept(this);
+            }
         }
         
         lVarMapStack.removeLast();
         return 0;
+    }
+
+    @Override
+    public Integer visit(ReturnNode n) {
+        return n.getExpr().accept(this);
     }
 }

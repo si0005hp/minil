@@ -7,6 +7,7 @@ import minil.ast.IntNode;
 import minil.ast.LetNode;
 import minil.ast.PrintNode;
 import minil.ast.ProgramNode;
+import minil.ast.ReturnNode;
 import minil.ast.VarRefNode;
 
 public interface NodeVisitor<T> {
@@ -18,4 +19,5 @@ public interface NodeVisitor<T> {
     T visit(VarRefNode n);
     T visit(FuncDefNode n);
     T visit(FuncCallNode n);
+    T visit(ReturnNode n);
 }

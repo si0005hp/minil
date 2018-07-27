@@ -61,6 +61,17 @@ public class MainTest {
         assertThat(runAndGetSysout(() -> runF("func/func2.minil")), is(perNewLine(1, 9, 8, 7)));
         assertThat(runAndGetSysout(() -> runF("func/func3.minil")), is(perNewLine(7, 65, 999)));
         assertThat(runAndGetSysout(() -> runF("func/func4.minil")), is(perNewLine(999, 24)));
+        expectedToFail(() -> runF("func/func5.minil"));
+        assertThat(runAndGetSysout(() -> runF("func/func6.minil")), is(perNewLine(3960)));
+    }
+    
+    private void expectedToFail(Runnable r) {
+        try {
+            r.run();
+        } catch (Exception e) {
+            return;
+        }
+        throw new RuntimeException("Expected to be failed but normaly end.");
     }
     
     private String runAndGetSysout(Runnable r) {
@@ -95,6 +106,9 @@ public class MainTest {
     }
     
     private String perNewLine(Object... data) {
+        if (data.length == 0) {
+            return "";
+        }
         return Stream.of(data).map(String::valueOf).collect(Collectors.joining(CR)) + CR;
     }
     

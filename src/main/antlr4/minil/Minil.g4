@@ -36,12 +36,13 @@ funcDef returns [FuncDefNode n]
 	;
 
 stmts[List<StmtNode> ns] returns [List<StmtNode> n]
-	: ( v=stmt { $ns.add($v.n); } )+ { $n = $ns; }
+	: ( stmt { $ns.add($stmt.n); } )+ { $n = $ns; }
 	;
 
 stmt returns [StmtNode n]
 	: PRINT LPAREN expr RPAREN   { $n = new PrintNode($expr.n); } // print
 	| var EQ expr                { $n = new LetNode($var.text, $expr.n); } // let
+	| RETURN expr                { $n = new ReturnNode($expr.n); } // return
 	;
 
 funcArgs[List<ExprNode> ns] returns [List<ExprNode> n]
@@ -62,6 +63,7 @@ expr returns [ExprNode n]
 
 var : IDT ;
 
+RETURN : 'return' ;
 PRINT : 'print' ;
 DEF : 'def' ;
 END : 'end' ;

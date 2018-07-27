@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import org.antlr.v4.gui.TreeViewer;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -38,6 +39,7 @@ public class Main {
     private static MinilParser getParser(CharStream input) {
         MinilLexer lexer = new MinilLexer(input);
         MinilParser parser = new MinilParser(new CommonTokenStream(lexer));
+        parser.setErrorHandler(new BailErrorStrategy());
         return parser;
     }
     
