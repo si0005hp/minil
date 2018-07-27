@@ -1,0 +1,14 @@
+def foo(num)
+	print(num)
+end
+
+foo(999)
+
+def bar(a, b)
+	num = a + b
+	num = num + a * 2
+	num = num + b * 2
+	print(num)
+end
+
+bar(3, 5)

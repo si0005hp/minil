@@ -1,0 +1,17 @@
+num = 999
+
+def foo()
+	num = 1 + 2 * 3
+	print(num)
+end
+
+foo()
+
+def bar()
+	num = 9 + 8 * 7
+	print(num)
+end
+
+bar()
+
+print(num)

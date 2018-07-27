@@ -55,6 +55,14 @@ public class MainTest {
         assertThat(runAndGetSysout(() -> runF("var/var4.minil")), is(perNewLine(1028)));
     }
     
+    @Test
+    public void func() {
+        assertThat(runAndGetSysout(() -> runF("func/func1.minil")), is(perNewLine(1)));
+        assertThat(runAndGetSysout(() -> runF("func/func2.minil")), is(perNewLine(1, 9, 8, 7)));
+        assertThat(runAndGetSysout(() -> runF("func/func3.minil")), is(perNewLine(7, 65, 999)));
+        assertThat(runAndGetSysout(() -> runF("func/func4.minil")), is(perNewLine(999, 24)));
+    }
+    
     private String runAndGetSysout(Runnable r) {
         PrintStream orgSysout = System.out;
         
