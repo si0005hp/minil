@@ -6,6 +6,8 @@ import static minil.MinilParser.MUL;
 import static minil.MinilParser.SUB;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Map;
 
 import minil.ast.BinOpNode;
@@ -21,6 +23,7 @@ import minil.ast.VarRefNode;
 public class NodeEvaluator implements NodeVisitor<Integer> {
 
     private final Map<String, Integer> gVarMap = new HashMap<>();
+    private final LinkedList<Map<String, Integer>> lVarMapStack = new LinkedList<>();
     private final Map<String, FuncDefNode> funcDefMap = new HashMap<>();
     
     @Override
@@ -61,12 +64,23 @@ public class NodeEvaluator implements NodeVisitor<Integer> {
 
     @Override
     public Integer visit(LetNode n) {
-        gVarMap.put(n.getVname(), n.getExpr().accept(this));
+        if (lVarMapStack.isEmpty()) {
+            gVarMap.put(n.getVname(), n.getExpr().accept(this));
+        } else {
+            lVarMapStack.getLast().put(n.getVname(), n.getExpr().accept(this));
+        }
         return 0;
     }
     
     @Override
     public Integer visit(VarRefNode n) {
+        ListIterator<Map<String, Integer>> lit = lVarMapStack.listIterator(lVarMapStack.size());
+        while (lit.hasPrevious()) {
+            Map<String, Integer> lVarMap = lit.previous();
+            if (lVarMap.containsKey(n.getVname())) {
+                return lVarMap.get(n.getVname());
+            }
+        }
         if (!gVarMap.containsKey(n.getVname())) {
             throw new RuntimeException("Undefined var: " + n.getVname());
         }
@@ -84,10 +98,27 @@ public class NodeEvaluator implements NodeVisitor<Integer> {
         if (!funcDefMap.containsKey(n.getFname())) {
             throw new RuntimeException("Undefined function: " + n.getFname());
         }
+        
         FuncDefNode f = funcDefMap.get(n.getFname());
+        
+        if (n.getExprs().size() != f.getParams().size()) {
+            throw new RuntimeException(String.format("Inconsistent number of arguments -> Expected: %s Actual: %s", 
+                    f.getParams().size(), n.getExprs().size()));
+        }
+        
+        Map<String, Integer> lVarMap = new HashMap<>();
+        for (int i = 0; i < f.getParams().size(); i++) {
+            String pName = f.getParams().get(i);
+            int arg = n.getExprs().get(i).accept(this);
+            lVarMap.put(pName, arg);
+        }
+        lVarMapStack.add(lVarMap);
+        
         for (StmtNode s : f.getStmts()) {
             s.accept(this);
         }
+        
+        lVarMapStack.removeLast();
         return 0;
     }
 }

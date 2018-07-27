@@ -9,12 +9,12 @@ import minil.NodeVisitor;
 public final class FuncDefNode extends Node {
     
     private final String fname;
-    private final List<String> args;
+    private final List<String> params;
     private final List<StmtNode> stmts;
     
     public FuncDefNode(String fname, List<String> args, List<StmtNode> stmts) {
         this.fname = fname;
-        this.args = args;
+        this.params = args;
         this.stmts = stmts;
     }
     
