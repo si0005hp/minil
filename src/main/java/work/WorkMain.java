@@ -11,7 +11,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 public class WorkMain {
-    private static final String MODE = "view";
+    private static final String MODE = "a";
     
     public static void main(String[] args) throws IOException {
         try (InputStream is = args.length < 1 ?
@@ -27,6 +27,7 @@ public class WorkMain {
     }
     
     static int run(CharStream input) {
+//        System.out.println(getParser(input).program().n.getArgs());
         System.out.println(getParser(input).program().n.getArgs());
         return 0;
     }
