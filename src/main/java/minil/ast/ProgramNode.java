@@ -8,12 +8,10 @@ import minil.NodeVisitor;
 @Getter
 public class ProgramNode extends Node {
 
-    private final List<StmtNode> stmts;
-    private final List<FuncDefNode> funcDefs;
+    private final List<Node> topLevels;
     
-    public ProgramNode(List<StmtNode> stmts, List<FuncDefNode> funcDefs) {
-        this.stmts = stmts;
-        this.funcDefs = funcDefs;
+    public ProgramNode(List<Node> topLevels) {
+        this.topLevels = topLevels;
     }
     
     @Override

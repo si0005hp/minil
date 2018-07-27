@@ -15,6 +15,7 @@ import minil.ast.FuncCallNode;
 import minil.ast.FuncDefNode;
 import minil.ast.IntNode;
 import minil.ast.LetNode;
+import minil.ast.Node;
 import minil.ast.PrintNode;
 import minil.ast.ProgramNode;
 import minil.ast.StmtNode;
@@ -53,11 +54,8 @@ public class NodeEvaluator implements NodeVisitor<Integer> {
 
     @Override
     public Integer visit(ProgramNode n) {
-        for (FuncDefNode f : n.getFuncDefs()) {
-            f.accept(this);
-        }
-        for (StmtNode s : n.getStmts()) {
-            s.accept(this);
+        for (Node t : n.getTopLevels()) {
+            t.accept(this);
         }
         return 0;
     }

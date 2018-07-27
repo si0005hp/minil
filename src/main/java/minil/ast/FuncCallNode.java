@@ -6,7 +6,7 @@ import lombok.Getter;
 import minil.NodeVisitor;
 
 @Getter
-public class FuncCallNode extends StmtNode {
+public class FuncCallNode extends ExprNode {
 
     private final String fname;
     private final List<ExprNode> exprs;

@@ -10,31 +10,22 @@ import java.util.stream.*;
 }
 
 program returns [ProgramNode n]
-	: v=topLevels[new ArrayList<>()]?
-	  {
-	  	List<StmtNode> stmts = new ArrayList<>();
-	  	List<FuncDefNode> funcDefs = new ArrayList<>();
-	  	if ($v.ctx != null) {
-	  		stmts = $v.n.stream().filter(n -> n instanceof StmtNode).map(StmtNode.class::cast).collect(Collectors.toList());
-	  		funcDefs = $v.n.stream().filter(n -> n instanceof FuncDefNode).map(FuncDefNode.class::cast).collect(Collectors.toList());
-	  	}
-	  	$n = new ProgramNode(stmts, funcDefs);
+	: v=topLevels[new ArrayList<>()]? 
+	  { 
+	  	$n = new ProgramNode($v.ctx == null ? Collections.emptyList() : $v.n);
 	  }
 	;
 
 topLevels[List<Node> ns] returns [List<Node> n]
 	: (
-		funcDefs[new ArrayList<>()]  { $ns.addAll($funcDefs.n); } |
-		stmts[new ArrayList<>()]     { $ns.addAll($stmts.n); }
+		funcDef  { $ns.add($funcDef.n); } | 
+		stmt     { $ns.add($stmt.n); } |
+		expr     { $ns.add($expr.n); }
 	  )+ { $n = $ns; }
 	;
 
 funcParams[List<String> ns] returns [List<String> n]
 	: var { $ns.add($var.text); } (',' var { $ns.add($var.text); } )* { $n = $ns; }
-	;
-
-funcDefs[List<FuncDefNode> ns] returns [List<FuncDefNode> n]
-	: ( f=funcDef { $ns.add($f.n); } )+ { $n = $ns; }
 	;
 
 funcDef returns [FuncDefNode n]
@@ -51,10 +42,6 @@ stmts[List<StmtNode> ns] returns [List<StmtNode> n]
 stmt returns [StmtNode n]
 	: PRINT LPAREN expr RPAREN   { $n = new PrintNode($expr.n); } // print
 	| var EQ expr                { $n = new LetNode($var.text, $expr.n); } // let
-	| IDT LPAREN a=funcArgs[new ArrayList<ExprNode>()]? RPAREN // funcCall
-	  {
-	  	$n = new FuncCallNode($IDT.text, $a.ctx == null ? Collections.emptyList() : $a.n); 
-	  }
 	;
 
 funcArgs[List<ExprNode> ns] returns [List<ExprNode> n]
@@ -65,6 +52,10 @@ expr returns [ExprNode n]
 	: l=expr op=('*'|'/') r=expr  { $n = new BinOpNode($op.type, $l.n, $r.n); }
 	| l=expr op=('+'|'-') r=expr  { $n = new BinOpNode($op.type, $l.n, $r.n); }
 	| INTVAL                      { $n = new IntNode($INTVAL.int); }
+	| IDT LPAREN a=funcArgs[new ArrayList<ExprNode>()]? RPAREN // funcCall
+	  {
+	  	$n = new FuncCallNode($IDT.text, $a.ctx == null ? Collections.emptyList() : $a.n); 
+	  }
 	| var                         { $n = new VarRefNode($var.text); }
 	| LPAREN expr RPAREN          { $n = $expr.n; }
 	;
