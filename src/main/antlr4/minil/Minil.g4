@@ -43,6 +43,28 @@ stmt returns [StmtNode n]
 	: PRINT LPAREN expr RPAREN   { $n = new PrintNode($expr.n); } // print
 	| var EQ expr                { $n = new LetNode($var.text, $expr.n); } // let
 	| RETURN expr                { $n = new ReturnNode($expr.n); } // return
+	| IF te=expr ts=stmts[new ArrayList<>()]        { List<IfNode> elifs = new ArrayList<>(); List<StmtNode> els = Collections.emptyList(); } // if
+	  ( ELIF eie=expr eis=stmts[new ArrayList<>()]  { elifs.add(new IfNode($eie.n, $eis.n, Collections.emptyList())); } )* 
+	  ( 
+	  	ELSE es=stmts[new ArrayList<>()]            
+	  	{
+	        if (elifs.isEmpty()) {
+	            els = $es.n;
+	        } else {
+	            elifs.get(elifs.size() - 1).setElseBody($es.n);
+	        }
+	  	} 
+	  )? 
+	  END
+	  {
+	  	IfNode root = new IfNode($te.n, $ts.n, Collections.emptyList());
+        if (elifs.isEmpty()) {
+            root.setElseBody(els);
+        } else {
+            root.setElseBody(Arrays.asList(IfNode.joinElifs(elifs)));
+        }
+	  	$n = root;
+	  }
 	;
 
 funcArgs[List<ExprNode> ns] returns [List<ExprNode> n]
@@ -67,6 +89,9 @@ RETURN : 'return' ;
 PRINT : 'print' ;
 DEF : 'def' ;
 END : 'end' ;
+IF : 'if' ;
+ELIF : 'elif' ;
+ELSE : 'else' ;
 
 MUL : '*' ;
 DIV : '/' ;

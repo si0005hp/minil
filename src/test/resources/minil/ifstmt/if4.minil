@@ -1,0 +1,9 @@
+if 0
+	print(9)
+elif 0
+	print(7)
+elif 0
+	print(3)
+else
+	print(1)
+end

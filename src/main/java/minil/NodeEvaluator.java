@@ -7,12 +7,14 @@ import static minil.MinilParser.SUB;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
 import minil.ast.BinOpNode;
 import minil.ast.FuncCallNode;
 import minil.ast.FuncDefNode;
+import minil.ast.IfNode;
 import minil.ast.IntNode;
 import minil.ast.LetNode;
 import minil.ast.Node;
@@ -140,5 +142,15 @@ public class NodeEvaluator implements NodeVisitor<Integer> {
     @Override
     public Integer visit(ReturnNode n) {
         return n.getExpr().accept(this);
+    }
+
+    @Override
+    public Integer visit(IfNode n) {
+        int cond = n.getCondExpr().accept(this);
+        List<StmtNode> body = cond != 0 ? n.getThenBody() : n.getElseBody(); 
+        for (StmtNode s : body) {
+            s.accept(this);
+        }
+        return 0;
     }
 }

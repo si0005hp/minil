@@ -1,0 +1,13 @@
+def foo(a)
+	if a
+		return 1
+	else
+		return 9
+	end
+end
+
+x = foo(0)
+y = foo(1)
+
+print(x)
+print(y)

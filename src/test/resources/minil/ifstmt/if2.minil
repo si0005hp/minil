@@ -1,0 +1,11 @@
+if 0
+	print(9)
+else
+	print(5)
+end
+
+if 1
+	print(9)
+else
+	print(5)
+end

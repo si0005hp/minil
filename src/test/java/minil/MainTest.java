@@ -8,7 +8,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -63,6 +62,15 @@ public class MainTest {
         assertThat(runAndGetSysout(() -> runF("func/func4.minil")), is(perNewLine(999, 24)));
         expectedToFail(() -> runF("func/func5.minil"));
         assertThat(runAndGetSysout(() -> runF("func/func6.minil")), is(perNewLine(3960)));
+    }
+    
+    @Test
+    public void ifstmt() {
+        assertThat(runAndGetSysout(() -> runF("ifstmt/if1.minil")), is(perNewLine(9)));
+        assertThat(runAndGetSysout(() -> runF("ifstmt/if2.minil")), is(perNewLine(5, 9)));
+        assertThat(runAndGetSysout(() -> runF("ifstmt/if3.minil")), is(perNewLine(3)));
+        assertThat(runAndGetSysout(() -> runF("ifstmt/if4.minil")), is(perNewLine(1)));
+//        assertThat(runAndGetSysout(() -> runF("ifstmt/if5.minil")), is(perNewLine(9, 1)));
     }
     
     private void expectedToFail(Runnable r) {

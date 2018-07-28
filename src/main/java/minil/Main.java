@@ -14,7 +14,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import minil.MinilParser.ProgramContext;
 
 public class Main {
-    private static final String MODE = "a";
+    private static final String MODE = "view";
     
     public static void main(String[] args) throws IOException {
         try (InputStream is = args.length < 1 ?
@@ -23,14 +23,15 @@ public class Main {
             if (MODE.equals("view")) {
                 treeView(CharStreams.fromStream(is));
             } else {
-                int res = run(CharStreams.fromStream(is));
-//                System.out.println(res);
+                run(CharStreams.fromStream(is));
             }
         }
     }
     
     static int run(CharStream input) {
-        ProgramContext p = getParser(input).program();
+        MinilParser parser = getParser(input);
+        parser.setErrorHandler(new BailErrorStrategy());
+        ProgramContext p = parser.program();
         NodeEvaluator eva = new NodeEvaluator();
         p.n.accept(eva);
         return 0;
@@ -39,7 +40,6 @@ public class Main {
     private static MinilParser getParser(CharStream input) {
         MinilLexer lexer = new MinilLexer(input);
         MinilParser parser = new MinilParser(new CommonTokenStream(lexer));
-        parser.setErrorHandler(new BailErrorStrategy());
         return parser;
     }
     
