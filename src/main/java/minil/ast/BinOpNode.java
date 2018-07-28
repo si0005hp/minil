@@ -15,10 +15,9 @@ public final class BinOpNode extends ExprNode {
         this.left = left;
         this.right = right;
     }
-    
+
     @Override
-    public <T> T accept(NodeVisitor<T> v) {
+    public <E, S> E accept(NodeVisitor<E, S> v) {
         return v.visit(this);
     }
-    
 }

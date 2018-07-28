@@ -1,0 +1,16 @@
+gnum = 100
+
+def foo(a)
+	if a
+		gnum = 1
+		return gnum
+	else
+		return gnum * 2
+	end
+end
+
+x = foo(0)
+y = foo(1)
+
+print(x)
+print(y)

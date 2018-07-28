@@ -1,0 +1,24 @@
+def foo(a)
+	if a
+		num = 100
+		if a
+			num = num + num
+		else
+			num = num - num
+		end
+	else
+		num = 200
+		if a
+			num = num * num
+		else
+			num = num / num
+		end
+	end
+	return num
+end
+
+x = foo(0)
+y = foo(1)
+
+print(x)
+print(y)

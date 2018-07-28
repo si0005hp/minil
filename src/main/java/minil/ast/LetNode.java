@@ -15,7 +15,7 @@ public class LetNode extends StmtNode {
     }
     
     @Override
-    public <T> T accept(NodeVisitor<T> v) {
+    public <E, S> S accept(NodeVisitor<E, S> v) {
         return v.visit(this);
     }
 }

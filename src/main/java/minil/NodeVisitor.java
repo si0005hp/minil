@@ -11,15 +11,18 @@ import minil.ast.ProgramNode;
 import minil.ast.ReturnNode;
 import minil.ast.VarRefNode;
 
-public interface NodeVisitor<T> {
-    T visit(IntNode n);
-    T visit(BinOpNode n);
-    T visit(PrintNode n);
-    T visit(ProgramNode n);
-    T visit(LetNode n);
-    T visit(VarRefNode n);
-    T visit(FuncDefNode n);
-    T visit(FuncCallNode n);
-    T visit(ReturnNode n);
-    T visit(IfNode n);
+public interface NodeVisitor<E, S> {
+    // Expr
+    E visit(IntNode n);
+    E visit(BinOpNode n);
+    E visit(VarRefNode n);
+    E visit(FuncCallNode n);
+    // Stmt
+    S visit(PrintNode n);
+    S visit(LetNode n);
+    S visit(ReturnNode n);
+    S visit(IfNode n);
+    // Others
+    S visit(ProgramNode n);
+    S visit(FuncDefNode n);
 }

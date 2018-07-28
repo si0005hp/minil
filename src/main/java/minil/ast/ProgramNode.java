@@ -13,9 +13,10 @@ public class ProgramNode extends Node {
     public ProgramNode(List<Node> topLevels) {
         this.topLevels = topLevels;
     }
-    
+
     @Override
-    public <T> T accept(NodeVisitor<T> v) {
+    public <E, S> Object accept(NodeVisitor<E, S> v) {
         return v.visit(this);
     }
+ 
 }

@@ -3,7 +3,5 @@ package minil.ast;
 import minil.NodeVisitor;
 
 public abstract class Node {
-    
-    public abstract <T> T accept(NodeVisitor<T> v);
-    
+    public abstract <E, S> Object accept(NodeVisitor<E, S> v);
 }

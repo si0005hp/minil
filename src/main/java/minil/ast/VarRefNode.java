@@ -13,9 +13,8 @@ public final class VarRefNode extends ExprNode {
     }
     
     @Override
-    public <T> T accept(NodeVisitor<T> v) {
+    public <E, S> E accept(NodeVisitor<E, S> v) {
         return v.visit(this);
     }
-    
 }
 

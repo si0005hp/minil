@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import minil.NodeEvaluator.StmtEvaResult;
 import minil.ast.BinOpNode;
 import minil.ast.FuncCallNode;
 import minil.ast.FuncDefNode;
@@ -24,11 +28,19 @@ import minil.ast.ReturnNode;
 import minil.ast.StmtNode;
 import minil.ast.VarRefNode;
 
-public class NodeEvaluator implements NodeVisitor<Integer> {
+public class NodeEvaluator implements NodeVisitor<Integer, StmtEvaResult> {
 
     private final Map<String, Integer> gVarMap = new HashMap<>();
     private final LinkedList<Map<String, Integer>> lVarMapStack = new LinkedList<>();
     private final Map<String, FuncDefNode> funcDefMap = new HashMap<>();
+    
+    @Data
+    @AllArgsConstructor(staticName = "of")
+    @RequiredArgsConstructor(staticName = "of")
+    static class StmtEvaResult {
+        private final Class<?> stmtType;
+        private Object value;
+    }
     
     @Override
     public Integer visit(IntNode n) {
@@ -49,21 +61,21 @@ public class NodeEvaluator implements NodeVisitor<Integer> {
     }
 
     @Override
-    public Integer visit(PrintNode n) {
+    public StmtEvaResult visit(PrintNode n) {
         int val = n.getExpr().accept(this);
         System.out.println(val);
-        return 0;
+        return StmtEvaResult.of(PrintNode.class);
     }
 
     @Override
-    public Integer visit(ProgramNode n) {
+    public StmtEvaResult visit(ProgramNode n) {
         for (Node t : n.getTopLevels()) {
             if (isIllegalTopLevel(t)) {
                 throw new RuntimeException("Illegal topLevel node: " + t);
             }
             t.accept(this);
         }
-        return 0;
+        return StmtEvaResult.of(ProgramNode.class);
     }
     
     private boolean isIllegalTopLevel(Node n) {
@@ -74,13 +86,13 @@ public class NodeEvaluator implements NodeVisitor<Integer> {
     }
 
     @Override
-    public Integer visit(LetNode n) {
+    public StmtEvaResult visit(LetNode n) {
         if (lVarMapStack.isEmpty()) {
             gVarMap.put(n.getVname(), n.getExpr().accept(this));
         } else {
             lVarMapStack.getLast().put(n.getVname(), n.getExpr().accept(this));
         }
-        return 0;
+        return StmtEvaResult.of(LetNode.class);
     }
     
     @Override
@@ -99,9 +111,9 @@ public class NodeEvaluator implements NodeVisitor<Integer> {
     }
 
     @Override
-    public Integer visit(FuncDefNode n) {
+    public StmtEvaResult visit(FuncDefNode n) {
         funcDefMap.put(n.getFname(), n);
-        return 0;
+        return StmtEvaResult.of(FuncDefNode.class);
     }
 
     @Override
@@ -126,12 +138,10 @@ public class NodeEvaluator implements NodeVisitor<Integer> {
         lVarMapStack.add(lVarMap);
         
         for (StmtNode s : f.getStmts()) {
-            if (s instanceof ReturnNode) {
-                int retVal = s.accept(this);
+            StmtEvaResult res = s.accept(this);
+            if (res.getStmtType() == ReturnNode.class) {
                 lVarMapStack.removeLast();
-                return retVal;
-            } else {
-                s.accept(this);
+                return (int)res.getValue();
             }
         }
         
@@ -140,17 +150,21 @@ public class NodeEvaluator implements NodeVisitor<Integer> {
     }
 
     @Override
-    public Integer visit(ReturnNode n) {
-        return n.getExpr().accept(this);
+    public StmtEvaResult visit(ReturnNode n) {
+        int retVal = n.getExpr().accept(this);
+        return StmtEvaResult.of(ReturnNode.class, retVal);
     }
 
     @Override
-    public Integer visit(IfNode n) {
+    public StmtEvaResult visit(IfNode n) {
         int cond = n.getCondExpr().accept(this);
         List<StmtNode> body = cond != 0 ? n.getThenBody() : n.getElseBody(); 
         for (StmtNode s : body) {
-            s.accept(this);
+            StmtEvaResult res = s.accept(this);
+            if (res.getStmtType() == ReturnNode.class) {
+                return res;
+            }
         }
-        return 0;
+        return StmtEvaResult.of(IfNode.class);
     }
 }
