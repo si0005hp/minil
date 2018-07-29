@@ -65,6 +65,8 @@ stmt returns [StmtNode n]
         }
 	  	$n = root;
 	  }
+	| WHILE expr DO? stmts[new ArrayList<>()] END  { $n = new WhileNode($expr.n, $stmts.n); }  // while
+	| BREAK                                        { $n = new BreakNode(); }  // break
 	;
 
 funcArgs[List<ExprNode> ns] returns [List<ExprNode> n]
@@ -93,6 +95,9 @@ END : 'end' ;
 IF : 'if' ;
 ELIF : 'elif' ;
 ELSE : 'else' ;
+WHILE : 'while' ;
+DO : 'do' ;
+BREAK : 'break' ;
 
 MUL : '*' ;
 DIV : '/' ;

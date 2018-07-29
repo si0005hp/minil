@@ -1,0 +1,21 @@
+def foo(cnt)
+	i = 0
+	while i < cnt do
+		print(i)
+		i = i + 1
+	end
+end
+
+def bar(cnt)
+	i = 0
+	while 1 do
+		print(i)
+		i = i + 1
+		if i == cnt
+			break
+		end
+	end
+end
+
+foo(3)
+bar(3)

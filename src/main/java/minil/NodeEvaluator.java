@@ -22,6 +22,8 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import minil.NodeEvaluator.StmtEvaResult;
 import minil.ast.BinOpNode;
+import minil.ast.BreakNode;
+import minil.ast.ExprNode;
 import minil.ast.FuncCallNode;
 import minil.ast.FuncDefNode;
 import minil.ast.IfNode;
@@ -33,6 +35,7 @@ import minil.ast.ProgramNode;
 import minil.ast.ReturnNode;
 import minil.ast.StmtNode;
 import minil.ast.VarRefNode;
+import minil.ast.WhileNode;
 
 public class NodeEvaluator implements NodeVisitor<Integer, StmtEvaResult> {
 
@@ -169,14 +172,38 @@ public class NodeEvaluator implements NodeVisitor<Integer, StmtEvaResult> {
 
     @Override
     public StmtEvaResult visit(IfNode n) {
-        int cond = n.getCondExpr().accept(this);
-        List<StmtNode> body = cond != 0 ? n.getThenBody() : n.getElseBody(); 
+        List<StmtNode> body = isTrueCond(n.getCondExpr()) ? n.getThenBody() : n.getElseBody(); 
         for (StmtNode s : body) {
             StmtEvaResult res = s.accept(this);
-            if (res.getStmtType() == ReturnNode.class) {
+            if (res.getStmtType() == ReturnNode.class
+                    || res.getStmtType() == BreakNode.class) {
                 return res;
             }
         }
         return StmtEvaResult.of(IfNode.class);
+    }
+    
+    private boolean isTrueCond(ExprNode condExpr) {
+        int iCond = condExpr.accept(this);
+        return iCond == 0 ? false : true; // 0 is false, otherwise true
+    }
+
+    @Override
+    public StmtEvaResult visit(WhileNode n) {
+        while (isTrueCond(n.getCondExpr())) {
+            for (StmtNode s : n.getBody()) {
+                StmtEvaResult res = s.accept(this);
+                if (res.getStmtType() == ReturnNode.class
+                        || res.getStmtType() == BreakNode.class) {
+                    return res;
+                }
+            }
+        }
+        return StmtEvaResult.of(WhileNode.class);
+    }
+
+    @Override
+    public StmtEvaResult visit(BreakNode n) {
+        return StmtEvaResult.of(BreakNode.class);
     }
 }

@@ -73,7 +73,14 @@ public class MainTest {
         assertThat(runAndGetSysout(() -> runF("ifstmt/if5.minil")), is(perNewLine(9, 1)));
         assertThat(runAndGetSysout(() -> runF("ifstmt/if6.minil")), is(perNewLine(200, 1)));
         assertThat(runAndGetSysout(() -> runF("ifstmt/if7.minil")), is(perNewLine(1, 200)));
-        assertThat(runAndGetSysout(() -> runF("ifstmt/if8.minil")), is(perNewLine(1,2,2,1,1,1,1,2,1)));
+        assertThat(runAndGetSysout(() -> runF("ifstmt/if8.minil")), is(perNewLine(1, 2, 2, 1, 1, 1, 1, 2, 1)));
+    }
+    
+    @Test
+    public void whilestmt() {
+        assertThat(runAndGetSysout(() -> runF("whilestmt/while1.minil")), is(perNewLine(0, 1, 2)));
+        assertThat(runAndGetSysout(() -> runF("whilestmt/while2.minil")), is(perNewLine(0, 1, 2, 3, 4)));
+        assertThat(runAndGetSysout(() -> runF("whilestmt/while3.minil")), is(perNewLine(0, 1, 2, 0, 1, 2)));
     }
     
     private void expectedToFail(Runnable r) {
