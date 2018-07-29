@@ -62,6 +62,7 @@ public class MainTest {
         assertThat(runAndGetSysout(() -> runF("func/func4.minil")), is(perNewLine(999, 24)));
         expectedToFail(() -> runF("func/func5.minil"));
         assertThat(runAndGetSysout(() -> runF("func/func6.minil")), is(perNewLine(3960)));
+        assertThat(runAndGetSysout(() -> runF("func/func7.minil")), is(perNewLine(720)));
     }
     
     @Test
