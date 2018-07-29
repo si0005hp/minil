@@ -1,0 +1,16 @@
+ival = 123
+sval = "def"
+
+
+def foo()
+	return 999
+end
+
+arr = [1, "abc", ival, sval, foo()]
+
+i = 0
+print(arr[i])
+print(arr[i + 1])
+print(arr[i + 2])
+print(arr[i + 3])
+print(arr[i + 4])

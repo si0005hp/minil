@@ -92,6 +92,14 @@ public class MainTest {
         assertThat(runAndGetSysout(() -> runF("str/str4.minil")), is(perNewLine("TRUE", "FALSE")));
     }
     
+    @Test
+    public void array() {
+        assertThat(runAndGetSysout(() -> runF("array/array1.minil")), is(perNewLine(1, 3, 5, 16)));
+        assertThat(runAndGetSysout(() -> runF("array/array2.minil")), is(perNewLine("[0, 1, 2]")));
+        assertThat(runAndGetSysout(() -> runF("array/array3.minil")), is(perNewLine(1, "abc", 123, "def", 999)));
+        expectedToFail(() -> runF("array/array4.minil"));
+    }
+    
     private void expectedToFail(Runnable r) {
         try {
             r.run();

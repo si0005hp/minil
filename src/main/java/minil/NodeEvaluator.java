@@ -11,6 +11,7 @@ import static minil.MinilParser.MUL;
 import static minil.MinilParser.NOTEQ;
 import static minil.MinilParser.SUB;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,6 +25,8 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import minil.MinilValue.ValueType;
 import minil.NodeEvaluator.StmtEvaResult;
+import minil.ast.ArrayElemRefNode;
+import minil.ast.ArrayNode;
 import minil.ast.BinOpNode;
 import minil.ast.BreakNode;
 import minil.ast.ExprNode;
@@ -242,6 +245,22 @@ public class NodeEvaluator implements NodeVisitor<MinilValue, StmtEvaResult> {
     @Override
     public StmtEvaResult visit(BreakNode n) {
         return StmtEvaResult.of(BreakNode.class);
+    }
+
+    @Override
+    public MinilValue visit(ArrayNode n) {
+        ArrayList<MinilValue> arr = new ArrayList<>();
+        for (ExprNode e : n.getExprs()) {
+            arr.add(e.accept(this));
+        }
+        return new MinilValue(ValueType.ARRAY, arr);
+    }
+
+    @Override
+    public MinilValue visit(ArrayElemRefNode n) {
+        ArrayList<MinilValue> arr = n.getArrname().accept(this).asArray();
+        int idx = n.getIdx().accept(this).asInt();
+        return arr.get(idx);
     }
 
 }

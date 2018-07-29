@@ -69,7 +69,7 @@ stmt returns [StmtNode n]
 	| BREAK                                        { $n = new BreakNode(); }  // break
 	;
 
-funcArgs[List<ExprNode> ns] returns [List<ExprNode> n]
+exprList[List<ExprNode> ns] returns [List<ExprNode> n]
 	: expr { $ns.add($expr.n); } (',' expr { $ns.add($expr.n); } )* { $n = $ns; }
 	;
 
@@ -79,12 +79,17 @@ expr returns [ExprNode n]
 	| l=expr op=('=='|'!='|'>'|'<'|'>='|'<=') r=expr  { $n = new BinOpNode($op.type, $l.n, $r.n); }
 	| INTVAL                                          { $n = new IntNode($INTVAL.int); }
 	| STRVAL                                          { $n = new StrNode($STRVAL.text); }
-	| IDT LPAREN a=funcArgs[new ArrayList<ExprNode>()]? RPAREN // funcCall
+	| LBRACK es=exprList[new ArrayList<>()]? RBRACK // array
+	  { 
+	  	$n = new ArrayNode($es.ctx == null ? Collections.emptyList() : $es.n); 
+	  } 
+	| IDT LPAREN a=exprList[new ArrayList<ExprNode>()]? RPAREN // funcCall
 	  {
 	  	$n = new FuncCallNode($IDT.text, $a.ctx == null ? Collections.emptyList() : $a.n); 
 	  }
-	| var                 { $n = new VarRefNode($var.text); }
-	| LPAREN expr RPAREN  { $n = $expr.n; }
+	| var LBRACK expr RBRACK { $n = new ArrayElemRefNode(new VarRefNode($var.text), $expr.n); }
+	| var                    { $n = new VarRefNode($var.text); }
+	| LPAREN expr RPAREN     { $n = $expr.n; }
 	;
 
 var : IDT ;
@@ -109,6 +114,8 @@ LBRACE : '{' ;
 RBRACE : '}' ;
 LPAREN : '(' ;
 RPAREN : ')' ;
+LBRACK : '[' ;
+RBRACK : ']' ;
 
 SEMICOLON : ';' ;
 EQ : '=' ;
