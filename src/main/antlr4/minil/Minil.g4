@@ -72,15 +72,16 @@ funcArgs[List<ExprNode> ns] returns [List<ExprNode> n]
 	;
 
 expr returns [ExprNode n]
-	: l=expr op=('*'|'/') r=expr  { $n = new BinOpNode($op.type, $l.n, $r.n); }
-	| l=expr op=('+'|'-') r=expr  { $n = new BinOpNode($op.type, $l.n, $r.n); }
-	| INTVAL                      { $n = new IntNode($INTVAL.int); }
+	: l=expr op=('*'|'/') r=expr                      { $n = new BinOpNode($op.type, $l.n, $r.n); }
+	| l=expr op=('+'|'-') r=expr                      { $n = new BinOpNode($op.type, $l.n, $r.n); }
+	| l=expr op=('=='|'!='|'>'|'<'|'>='|'<=') r=expr  { $n = new BinOpNode($op.type, $l.n, $r.n); }
+	| INTVAL                                          { $n = new IntNode($INTVAL.int); }
 	| IDT LPAREN a=funcArgs[new ArrayList<ExprNode>()]? RPAREN // funcCall
 	  {
 	  	$n = new FuncCallNode($IDT.text, $a.ctx == null ? Collections.emptyList() : $a.n); 
 	  }
-	| var                         { $n = new VarRefNode($var.text); }
-	| LPAREN expr RPAREN          { $n = $expr.n; }
+	| var                 { $n = new VarRefNode($var.text); }
+	| LPAREN expr RPAREN  { $n = $expr.n; }
 	;
 
 var : IDT ;
@@ -105,6 +106,13 @@ RPAREN : ')' ;
 
 SEMICOLON : ';' ;
 EQ : '=' ;
+
+EQEQ : '==' ;
+NOTEQ : '!=' ;
+GT : '>' ;
+LT : '<' ;
+GTE : '>=' ;
+LTE : '<=' ;
 
 IDT : [a-z]+ ;
 INTVAL : [0-9]+ ;

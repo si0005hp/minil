@@ -4,6 +4,12 @@ import static minil.MinilParser.ADD;
 import static minil.MinilParser.DIV;
 import static minil.MinilParser.MUL;
 import static minil.MinilParser.SUB;
+import static minil.MinilParser.EQEQ;
+import static minil.MinilParser.NOTEQ;
+import static minil.MinilParser.GT;
+import static minil.MinilParser.LT;
+import static minil.MinilParser.GTE;
+import static minil.MinilParser.LTE;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -56,6 +62,12 @@ public class NodeEvaluator implements NodeVisitor<Integer, StmtEvaResult> {
         case SUB: return l - r;
         case MUL: return l * r;
         case DIV: return l / r;
+        case EQEQ: return l == r ? 1 : 0;
+        case NOTEQ: return l != r ? 1 : 0;
+        case GT: return l > r ? 1 : 0;
+        case LT: return l < r ? 1 : 0;
+        case GTE: return l >= r ? 1 : 0;
+        case LTE: return l <= r ? 1 : 0;
         }
         throw new RuntimeException("Illegal binop type: " + n.getOpType());
     }

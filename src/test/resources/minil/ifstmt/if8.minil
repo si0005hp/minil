@@ -1,0 +1,54 @@
+i = 3
+if (i == 3)
+	print(1)
+else
+	print(2)
+end
+
+if (i == 5)
+	print(1)
+else
+	print(2)
+end
+
+if (i > 5)
+	print(1)
+else
+	print(2)
+end
+
+if (i < 5)
+	print(1)
+else
+	print(2)
+end
+
+if (i != 5)
+	print(1)
+else
+	print(2)
+end
+
+if (i >= 3)
+	print(1)
+else
+	print(2)
+end
+
+if (i <= 3)
+	print(1)
+else
+	print(2)
+end
+
+if (i >= 4)
+	print(1)
+else
+	print(2)
+end
+
+if (i <= 4)
+	print(1)
+else
+	print(2)
+end
