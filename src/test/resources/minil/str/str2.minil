@@ -1,0 +1,10 @@
+def hello(name)
+	print("Hello," + name)
+end
+
+
+hello("you")
+
+myname = "me"
+
+hello(myname)

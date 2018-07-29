@@ -78,6 +78,7 @@ expr returns [ExprNode n]
 	| l=expr op=('+'|'-') r=expr                      { $n = new BinOpNode($op.type, $l.n, $r.n); }
 	| l=expr op=('=='|'!='|'>'|'<'|'>='|'<=') r=expr  { $n = new BinOpNode($op.type, $l.n, $r.n); }
 	| INTVAL                                          { $n = new IntNode($INTVAL.int); }
+	| STRVAL                                          { $n = new StrNode($STRVAL.text); }
 	| IDT LPAREN a=funcArgs[new ArrayList<ExprNode>()]? RPAREN // funcCall
 	  {
 	  	$n = new FuncCallNode($IDT.text, $a.ctx == null ? Collections.emptyList() : $a.n); 
@@ -121,5 +122,6 @@ LTE : '<=' ;
 
 IDT : [a-z]+ ;
 INTVAL : [0-9]+ ;
+STRVAL : '"' ('""'|~'"')* '"' ;
 NEWLINE : ('\r' '\n'?|'\n') -> skip ;
 WS : [ \t]+ -> skip ;

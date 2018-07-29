@@ -10,6 +10,7 @@ import minil.ast.LetNode;
 import minil.ast.PrintNode;
 import minil.ast.ProgramNode;
 import minil.ast.ReturnNode;
+import minil.ast.StrNode;
 import minil.ast.VarRefNode;
 import minil.ast.WhileNode;
 
@@ -19,6 +20,7 @@ public interface NodeVisitor<E, S> {
     E visit(BinOpNode n);
     E visit(VarRefNode n);
     E visit(FuncCallNode n);
+    E visit(StrNode n);
     // Stmt
     S visit(PrintNode n);
     S visit(LetNode n);

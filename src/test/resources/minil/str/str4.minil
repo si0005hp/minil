@@ -1,0 +1,15 @@
+def isfoo(name)
+	if name == "foo"
+		return "TRUE"
+	else
+		return "FALSE"
+	end 
+end
+
+
+x = isfoo("foo")
+y = isfoo("bar")
+
+
+print(x)
+print(y)

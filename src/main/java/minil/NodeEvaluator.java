@@ -2,14 +2,14 @@ package minil;
 
 import static minil.MinilParser.ADD;
 import static minil.MinilParser.DIV;
-import static minil.MinilParser.MUL;
-import static minil.MinilParser.SUB;
 import static minil.MinilParser.EQEQ;
-import static minil.MinilParser.NOTEQ;
 import static minil.MinilParser.GT;
-import static minil.MinilParser.LT;
 import static minil.MinilParser.GTE;
+import static minil.MinilParser.LT;
 import static minil.MinilParser.LTE;
+import static minil.MinilParser.MUL;
+import static minil.MinilParser.NOTEQ;
+import static minil.MinilParser.SUB;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,9 +17,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import com.google.common.base.Objects;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import minil.MinilValue.ValueType;
 import minil.NodeEvaluator.StmtEvaResult;
 import minil.ast.BinOpNode;
 import minil.ast.BreakNode;
@@ -34,13 +37,14 @@ import minil.ast.PrintNode;
 import minil.ast.ProgramNode;
 import minil.ast.ReturnNode;
 import minil.ast.StmtNode;
+import minil.ast.StrNode;
 import minil.ast.VarRefNode;
 import minil.ast.WhileNode;
 
-public class NodeEvaluator implements NodeVisitor<Integer, StmtEvaResult> {
+public class NodeEvaluator implements NodeVisitor<MinilValue, StmtEvaResult> {
 
-    private final Map<String, Integer> gVarMap = new HashMap<>();
-    private final LinkedList<Map<String, Integer>> lVarMapStack = new LinkedList<>();
+    private final Map<String, MinilValue> gVarMap = new HashMap<>();
+    private final LinkedList<Map<String, MinilValue>> lVarMapStack = new LinkedList<>();
     private final Map<String, FuncDefNode> funcDefMap = new HashMap<>();
     
     @Data
@@ -48,37 +52,70 @@ public class NodeEvaluator implements NodeVisitor<Integer, StmtEvaResult> {
     @RequiredArgsConstructor(staticName = "of")
     static class StmtEvaResult {
         private final Class<?> stmtType;
-        private Object value;
+        private MinilValue value;
     }
     
     @Override
-    public Integer visit(IntNode n) {
-        return n.getValue();
+    public MinilValue visit(IntNode n) {
+        return new MinilValue(ValueType.INT, n.getValue());
+    }
+    
+    @Override
+    public MinilValue visit(StrNode n) {
+        return new MinilValue(ValueType.STRING, n.getValue());
     }
 
     @Override
-    public Integer visit(BinOpNode n) {
-        int l = n.getLeft().accept(this);
-        int r = n.getRight().accept(this);
+    public MinilValue visit(BinOpNode n) {
+        MinilValue l = n.getLeft().accept(this);
+        MinilValue r = n.getRight().accept(this);
+        validBinOprandsType(l, r);
+        
         switch (n.getOpType()) {
-        case ADD: return l + r;
-        case SUB: return l - r;
-        case MUL: return l * r;
-        case DIV: return l / r;
-        case EQEQ: return l == r ? 1 : 0;
-        case NOTEQ: return l != r ? 1 : 0;
-        case GT: return l > r ? 1 : 0;
-        case LT: return l < r ? 1 : 0;
-        case GTE: return l >= r ? 1 : 0;
-        case LTE: return l <= r ? 1 : 0;
+        case ADD: 
+            if (l.getType() == ValueType.INT) {
+                return new MinilValue(ValueType.INT, l.asInt() + r.asInt());
+            }
+            return new MinilValue(ValueType.STRING, l.asStr() + r.asStr());
+        case SUB: 
+            return new MinilValue(ValueType.INT, l.asInt() - r.asInt());
+        case MUL: 
+            return new MinilValue(ValueType.INT, l.asInt() * r.asInt());
+        case DIV: 
+            return new MinilValue(ValueType.INT, l.asInt() / r.asInt());
+        case EQEQ: 
+            return new MinilValue(ValueType.INT, 
+                    Objects.equal(l.getValue(), r.getValue()) ? 1 : 0);
+        case NOTEQ: 
+            return new MinilValue(ValueType.INT, 
+                    Objects.equal(l.getValue(), r.getValue()) ? 0 : 1);
+        case GT: 
+            return new MinilValue(ValueType.INT, 
+                    l.asInt() > r.asInt() ? 1 : 0);
+        case LT: 
+            return new MinilValue(ValueType.INT, 
+                    l.asInt() < r.asInt() ? 1 : 0);
+        case GTE: 
+            return new MinilValue(ValueType.INT, 
+                    l.asInt() >= r.asInt() ? 1 : 0);
+        case LTE: 
+            return new MinilValue(ValueType.INT, 
+                    l.asInt() <= r.asInt() ? 1 : 0);
         }
         throw new RuntimeException("Illegal binop type: " + n.getOpType());
     }
-
+    
+    private void validBinOprandsType(MinilValue l, MinilValue r) {
+        if (l.getType() != r.getType()) {
+            throw new RuntimeException(String.format("Invalid BinOprands' type. Left: %s, Right: %s", 
+                    l.getType(), r.getType()));
+        }
+    }
+    
     @Override
     public StmtEvaResult visit(PrintNode n) {
-        int val = n.getExpr().accept(this);
-        System.out.println(val);
+        MinilValue val = n.getExpr().accept(this);
+        System.out.println(val.getValue());
         return StmtEvaResult.of(PrintNode.class);
     }
 
@@ -111,10 +148,10 @@ public class NodeEvaluator implements NodeVisitor<Integer, StmtEvaResult> {
     }
     
     @Override
-    public Integer visit(VarRefNode n) {
-        ListIterator<Map<String, Integer>> lit = lVarMapStack.listIterator(lVarMapStack.size());
+    public MinilValue visit(VarRefNode n) {
+        ListIterator<Map<String, MinilValue>> lit = lVarMapStack.listIterator(lVarMapStack.size());
         while (lit.hasPrevious()) {
-            Map<String, Integer> lVarMap = lit.previous();
+            Map<String, MinilValue> lVarMap = lit.previous();
             if (lVarMap.containsKey(n.getVname())) {
                 return lVarMap.get(n.getVname());
             }
@@ -132,7 +169,7 @@ public class NodeEvaluator implements NodeVisitor<Integer, StmtEvaResult> {
     }
 
     @Override
-    public Integer visit(FuncCallNode n) {
+    public MinilValue visit(FuncCallNode n) {
         if (!funcDefMap.containsKey(n.getFname())) {
             throw new RuntimeException("Undefined function: " + n.getFname());
         }
@@ -144,10 +181,10 @@ public class NodeEvaluator implements NodeVisitor<Integer, StmtEvaResult> {
                     f.getParams().size(), n.getExprs().size()));
         }
         
-        Map<String, Integer> lVarMap = new HashMap<>();
+        Map<String, MinilValue> lVarMap = new HashMap<>();
         for (int i = 0; i < f.getParams().size(); i++) {
             String pName = f.getParams().get(i);
-            int arg = n.getExprs().get(i).accept(this);
+            MinilValue arg = n.getExprs().get(i).accept(this);
             lVarMap.put(pName, arg);
         }
         lVarMapStack.add(lVarMap);
@@ -156,17 +193,17 @@ public class NodeEvaluator implements NodeVisitor<Integer, StmtEvaResult> {
             StmtEvaResult res = s.accept(this);
             if (res.getStmtType() == ReturnNode.class) {
                 lVarMapStack.removeLast();
-                return (int)res.getValue();
+                return res.getValue();
             }
         }
         
         lVarMapStack.removeLast();
-        return 0;
+        return null;
     }
 
     @Override
     public StmtEvaResult visit(ReturnNode n) {
-        int retVal = n.getExpr().accept(this);
+        MinilValue retVal = n.getExpr().accept(this);
         return StmtEvaResult.of(ReturnNode.class, retVal);
     }
 
@@ -184,8 +221,8 @@ public class NodeEvaluator implements NodeVisitor<Integer, StmtEvaResult> {
     }
     
     private boolean isTrueCond(ExprNode condExpr) {
-        int iCond = condExpr.accept(this);
-        return iCond == 0 ? false : true; // 0 is false, otherwise true
+        MinilValue iCond = condExpr.accept(this);
+        return iCond.asInt() == 0 ? false : true; // 0 is false, otherwise true
     }
 
     @Override
@@ -206,4 +243,5 @@ public class NodeEvaluator implements NodeVisitor<Integer, StmtEvaResult> {
     public StmtEvaResult visit(BreakNode n) {
         return StmtEvaResult.of(BreakNode.class);
     }
+
 }

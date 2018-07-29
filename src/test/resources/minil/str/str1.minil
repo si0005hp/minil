@@ -1,0 +1,4 @@
+x = "abc"
+y = "def"
+
+print(x + y)

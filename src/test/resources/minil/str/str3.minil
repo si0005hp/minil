@@ -1,0 +1,4 @@
+ival = 123
+sval = "abc"
+
+num = ival + sval

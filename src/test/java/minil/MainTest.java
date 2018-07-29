@@ -84,13 +84,21 @@ public class MainTest {
         assertThat(runAndGetSysout(() -> runF("whilestmt/while3.minil")), is(perNewLine(0, 1, 2, 0, 1, 2)));
     }
     
+    @Test
+    public void str() {
+        assertThat(runAndGetSysout(() -> runF("str/str1.minil")), is(perNewLine("abcdef")));
+        assertThat(runAndGetSysout(() -> runF("str/str2.minil")), is(perNewLine("Hello,you", "Hello,me")));
+        expectedToFail(() -> runF("str/str3.minil"));
+        assertThat(runAndGetSysout(() -> runF("str/str4.minil")), is(perNewLine("TRUE", "FALSE")));
+    }
+    
     private void expectedToFail(Runnable r) {
         try {
             r.run();
         } catch (Exception e) {
             return;
         }
-        throw new RuntimeException("Expected to be failed but normaly end.");
+        throw new RuntimeException("Expected to be failed but ended normaly.");
     }
     
     private String runAndGetSysout(Runnable r) {
