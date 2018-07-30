@@ -101,6 +101,11 @@ public class MainTest {
         assertThat(runAndGetSysout(() -> runF("array/array5.minil")), is(perNewLine(9, 8, 7)));
     }
     
+    @Test
+    public void algo() {
+        assertThat(runAndGetSysout(() -> runF("algo/bubblesort.minil")), is(perNewLine(1, 2, 4, 7, 9)));
+    }
+    
     private void expectedToFail(Runnable r) {
         try {
             r.run();

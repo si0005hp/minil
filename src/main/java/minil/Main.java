@@ -14,7 +14,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import minil.MinilParser.ProgramContext;
 
 public class Main {
-    private static final String MODE = "a";
+    private static final String MODE = "view";
     
     public static void main(String[] args) throws IOException {
         try (InputStream is = args.length < 1 ?
