@@ -25,6 +25,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import minil.MinilValue.ValueType;
 import minil.NodeEvaluator.StmtEvaResult;
+import minil.ast.ArrayElemLetNode;
 import minil.ast.ArrayElemRefNode;
 import minil.ast.ArrayNode;
 import minil.ast.BinOpNode;
@@ -261,6 +262,14 @@ public class NodeEvaluator implements NodeVisitor<MinilValue, StmtEvaResult> {
         ArrayList<MinilValue> arr = n.getArrname().accept(this).asArray();
         int idx = n.getIdx().accept(this).asInt();
         return arr.get(idx);
+    }
+
+    @Override
+    public StmtEvaResult visit(ArrayElemLetNode n) {
+        ArrayList<MinilValue> arr = n.getElem().getArrname().accept(this).asArray();
+        int idx = n.getElem().getIdx().accept(this).asInt();
+        arr.set(idx, n.getExpr().accept(this));
+        return new StmtEvaResult(ArrayElemLetNode.class);
     }
 
 }

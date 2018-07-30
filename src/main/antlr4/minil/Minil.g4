@@ -42,6 +42,7 @@ stmts[List<StmtNode> ns] returns [List<StmtNode> n]
 stmt returns [StmtNode n]
 	: PRINT LPAREN expr RPAREN   { $n = new PrintNode($expr.n); } // print
 	| var EQ expr                { $n = new VarLetNode($var.n, $expr.n); } // var let
+	| arrElem EQ expr            { $n = new ArrayElemLetNode($arrElem.n, $expr.n); } // array elem let
 	| RETURN expr                { $n = new ReturnNode($expr.n); } // return
 	| IF te=expr ts=stmts[new ArrayList<>()]        { List<IfNode> elifs = new ArrayList<>(); List<StmtNode> els = Collections.emptyList(); } // if
 	  ( ELIF eie=expr eis=stmts[new ArrayList<>()]  { elifs.add(new IfNode($eie.n, $eis.n, Collections.emptyList())); } )* 
@@ -87,9 +88,13 @@ expr returns [ExprNode n]
 	  {
 	  	$n = new FuncCallNode($IDT.text, $a.ctx == null ? Collections.emptyList() : $a.n); 
 	  }
-	| var LBRACK expr RBRACK { $n = new ArrayElemRefNode($var.n, $expr.n); }
+	| arrElem                { $n = $arrElem.n; }
 	| var                    { $n = $var.n; }
 	| LPAREN expr RPAREN     { $n = $expr.n; }
+	;
+
+arrElem returns [ArrayElemRefNode n]
+	: var LBRACK expr RBRACK { $n = new ArrayElemRefNode($var.n, $expr.n); }
 	;
 
 var returns [VarRefNode n]

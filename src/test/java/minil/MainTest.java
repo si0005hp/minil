@@ -98,6 +98,7 @@ public class MainTest {
         assertThat(runAndGetSysout(() -> runF("array/array2.minil")), is(perNewLine("[0, 1, 2]")));
         assertThat(runAndGetSysout(() -> runF("array/array3.minil")), is(perNewLine(1, "abc", 123, "def", 999)));
         expectedToFail(() -> runF("array/array4.minil"));
+        assertThat(runAndGetSysout(() -> runF("array/array5.minil")), is(perNewLine(9, 8, 7)));
     }
     
     private void expectedToFail(Runnable r) {

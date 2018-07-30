@@ -1,5 +1,6 @@
 package minil;
 
+import minil.ast.ArrayElemLetNode;
 import minil.ast.ArrayElemRefNode;
 import minil.ast.ArrayNode;
 import minil.ast.BinOpNode;
@@ -8,11 +9,11 @@ import minil.ast.FuncCallNode;
 import minil.ast.FuncDefNode;
 import minil.ast.IfNode;
 import minil.ast.IntNode;
-import minil.ast.VarLetNode;
 import minil.ast.PrintNode;
 import minil.ast.ProgramNode;
 import minil.ast.ReturnNode;
 import minil.ast.StrNode;
+import minil.ast.VarLetNode;
 import minil.ast.VarRefNode;
 import minil.ast.WhileNode;
 
@@ -32,6 +33,7 @@ public interface NodeVisitor<E, S> {
     S visit(IfNode n);
     S visit(WhileNode n);
     S visit(BreakNode n);
+    S visit(ArrayElemLetNode n);
     // Others
     S visit(ProgramNode n);
     S visit(FuncDefNode n);
