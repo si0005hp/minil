@@ -31,6 +31,7 @@ import minil.ast.ArrayNode;
 import minil.ast.BinOpNode;
 import minil.ast.BreakNode;
 import minil.ast.ExprNode;
+import minil.ast.ExprStmtNode;
 import minil.ast.FuncCallNode;
 import minil.ast.FuncDefNode;
 import minil.ast.IfNode;
@@ -270,6 +271,12 @@ public class NodeEvaluator implements NodeVisitor<MinilValue, StmtEvaResult> {
         int idx = n.getElem().getIdx().accept(this).asInt();
         arr.set(idx, n.getExpr().accept(this));
         return new StmtEvaResult(ArrayElemLetNode.class);
+    }
+
+    @Override
+    public StmtEvaResult visit(ExprStmtNode n) {
+        n.getExpr().accept(this); // Just evaluate the expression
+        return new StmtEvaResult(ExprStmtNode.class);
     }
 
 }

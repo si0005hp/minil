@@ -5,6 +5,7 @@ import minil.ast.ArrayElemRefNode;
 import minil.ast.ArrayNode;
 import minil.ast.BinOpNode;
 import minil.ast.BreakNode;
+import minil.ast.ExprStmtNode;
 import minil.ast.FuncCallNode;
 import minil.ast.FuncDefNode;
 import minil.ast.IfNode;
@@ -34,6 +35,7 @@ public interface NodeVisitor<E, S> {
     S visit(WhileNode n);
     S visit(BreakNode n);
     S visit(ArrayElemLetNode n);
+    S visit(ExprStmtNode n);
     // Others
     S visit(ProgramNode n);
     S visit(FuncDefNode n);
