@@ -34,7 +34,7 @@ import minil.ast.FuncCallNode;
 import minil.ast.FuncDefNode;
 import minil.ast.IfNode;
 import minil.ast.IntNode;
-import minil.ast.LetNode;
+import minil.ast.VarLetNode;
 import minil.ast.Node;
 import minil.ast.PrintNode;
 import minil.ast.ProgramNode;
@@ -141,13 +141,13 @@ public class NodeEvaluator implements NodeVisitor<MinilValue, StmtEvaResult> {
     }
 
     @Override
-    public StmtEvaResult visit(LetNode n) {
+    public StmtEvaResult visit(VarLetNode n) {
         if (lVarMapStack.isEmpty()) {
-            gVarMap.put(n.getVname(), n.getExpr().accept(this));
+            gVarMap.put(n.getVar().getVname(), n.getExpr().accept(this));
         } else {
-            lVarMapStack.getLast().put(n.getVname(), n.getExpr().accept(this));
+            lVarMapStack.getLast().put(n.getVar().getVname(), n.getExpr().accept(this));
         }
-        return StmtEvaResult.of(LetNode.class);
+        return StmtEvaResult.of(VarLetNode.class);
     }
     
     @Override

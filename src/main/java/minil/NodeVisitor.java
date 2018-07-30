@@ -8,7 +8,7 @@ import minil.ast.FuncCallNode;
 import minil.ast.FuncDefNode;
 import minil.ast.IfNode;
 import minil.ast.IntNode;
-import minil.ast.LetNode;
+import minil.ast.VarLetNode;
 import minil.ast.PrintNode;
 import minil.ast.ProgramNode;
 import minil.ast.ReturnNode;
@@ -27,7 +27,7 @@ public interface NodeVisitor<E, S> {
     E visit(ArrayElemRefNode n);
     // Stmt
     S visit(PrintNode n);
-    S visit(LetNode n);
+    S visit(VarLetNode n);
     S visit(ReturnNode n);
     S visit(IfNode n);
     S visit(WhileNode n);

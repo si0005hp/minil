@@ -4,13 +4,13 @@ import lombok.Getter;
 import minil.NodeVisitor;
 
 @Getter
-public class LetNode extends StmtNode {
+public class VarLetNode extends StmtNode {
 
-    private final String vname;
+    private final VarRefNode var;
     private final ExprNode expr;
     
-    public LetNode(String vname, ExprNode expr) {
-        this.vname = vname;
+    public VarLetNode(VarRefNode var, ExprNode expr) {
+        this.var = var;
         this.expr = expr;
     }
     

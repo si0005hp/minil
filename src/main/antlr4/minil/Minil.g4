@@ -25,7 +25,7 @@ topLevels[List<Node> ns] returns [List<Node> n]
 	;
 
 funcParams[List<String> ns] returns [List<String> n]
-	: var { $ns.add($var.text); } (',' var { $ns.add($var.text); } )* { $n = $ns; }
+	: IDT { $ns.add($IDT.text); } (',' IDT { $ns.add($IDT.text); } )* { $n = $ns; }
 	;
 
 funcDef returns [FuncDefNode n]
@@ -41,7 +41,7 @@ stmts[List<StmtNode> ns] returns [List<StmtNode> n]
 
 stmt returns [StmtNode n]
 	: PRINT LPAREN expr RPAREN   { $n = new PrintNode($expr.n); } // print
-	| var EQ expr                { $n = new LetNode($var.text, $expr.n); } // let
+	| var EQ expr                { $n = new VarLetNode($var.n, $expr.n); } // var let
 	| RETURN expr                { $n = new ReturnNode($expr.n); } // return
 	| IF te=expr ts=stmts[new ArrayList<>()]        { List<IfNode> elifs = new ArrayList<>(); List<StmtNode> els = Collections.emptyList(); } // if
 	  ( ELIF eie=expr eis=stmts[new ArrayList<>()]  { elifs.add(new IfNode($eie.n, $eis.n, Collections.emptyList())); } )* 
@@ -87,12 +87,14 @@ expr returns [ExprNode n]
 	  {
 	  	$n = new FuncCallNode($IDT.text, $a.ctx == null ? Collections.emptyList() : $a.n); 
 	  }
-	| var LBRACK expr RBRACK { $n = new ArrayElemRefNode(new VarRefNode($var.text), $expr.n); }
-	| var                    { $n = new VarRefNode($var.text); }
+	| var LBRACK expr RBRACK { $n = new ArrayElemRefNode($var.n, $expr.n); }
+	| var                    { $n = $var.n; }
 	| LPAREN expr RPAREN     { $n = $expr.n; }
 	;
 
-var : IDT ;
+var returns [VarRefNode n]
+	: IDT { $n = new VarRefNode($IDT.text); }
+	;
 
 RETURN : 'return' ;
 PRINT : 'print' ;
