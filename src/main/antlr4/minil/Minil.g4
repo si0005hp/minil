@@ -16,11 +16,10 @@ program returns [ProgramNode n]
 	  }
 	;
 
-topLevels[List<Node> ns] returns [List<Node> n]
+topLevels[List<StmtNode> ns] returns [List<StmtNode> n]
 	: (
 		funcDef  { $ns.add($funcDef.n); } | 
-		stmt     { $ns.add($stmt.n); } |
-		expr     { $ns.add($expr.n); }
+		stmt     { $ns.add($stmt.n); }
 	  )+ { $n = $ns; }
 	;
 

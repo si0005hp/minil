@@ -6,7 +6,7 @@ import lombok.Getter;
 import minil.NodeVisitor;
 
 @Getter
-public final class FuncDefNode extends Node {
+public final class FuncDefNode extends StmtNode {
 
     private final String fname;
     private final List<String> params;
@@ -19,7 +19,7 @@ public final class FuncDefNode extends Node {
     }
 
     @Override
-    public <E, S> Object accept(NodeVisitor<E, S> v) {
+    public <E, S> S accept(NodeVisitor<E, S> v) {
         return v.visit(this);
     }
 

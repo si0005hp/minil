@@ -36,13 +36,12 @@ import minil.ast.FuncCallNode;
 import minil.ast.FuncDefNode;
 import minil.ast.IfNode;
 import minil.ast.IntNode;
-import minil.ast.VarLetNode;
-import minil.ast.Node;
 import minil.ast.PrintNode;
 import minil.ast.ProgramNode;
 import minil.ast.ReturnNode;
 import minil.ast.StmtNode;
 import minil.ast.StrNode;
+import minil.ast.VarLetNode;
 import minil.ast.VarRefNode;
 import minil.ast.WhileNode;
 
@@ -126,20 +125,13 @@ public class NodeEvaluator implements NodeVisitor<MinilValue, StmtEvaResult> {
 
     @Override
     public StmtEvaResult visit(ProgramNode n) {
-        for (Node t : n.getTopLevels()) {
-            if (isIllegalTopLevel(t)) {
-                throw new RuntimeException("Illegal topLevel node: " + t);
+        for (StmtNode s : n.getTopLevels()) {
+            StmtEvaResult res = s.accept(this);
+            if (res.getStmtType() == ReturnNode.class) {
+                return res;
             }
-            t.accept(this);
         }
         return StmtEvaResult.of(ProgramNode.class);
-    }
-    
-    private boolean isIllegalTopLevel(Node n) {
-        if (n instanceof ReturnNode) {
-            return true;
-        }
-        return false;
     }
 
     @Override

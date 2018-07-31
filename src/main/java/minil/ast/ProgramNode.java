@@ -8,9 +8,9 @@ import minil.NodeVisitor;
 @Getter
 public class ProgramNode extends Node {
 
-    private final List<Node> topLevels;
+    private final List<StmtNode> topLevels;
     
-    public ProgramNode(List<Node> topLevels) {
+    public ProgramNode(List<StmtNode> topLevels) {
         this.topLevels = topLevels;
     }
 

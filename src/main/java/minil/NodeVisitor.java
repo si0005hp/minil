@@ -36,7 +36,7 @@ public interface NodeVisitor<E, S> {
     S visit(BreakNode n);
     S visit(ArrayElemLetNode n);
     S visit(ExprStmtNode n);
+    S visit(FuncDefNode n);
     // Others
     S visit(ProgramNode n);
-    S visit(FuncDefNode n);
 }
