@@ -1,12 +1,8 @@
-data = [1,9,2,7,4]
-datasize = 5
-
-
 def bubblesort(data)
-	i = datasize - 1
+	i = data.length - 1
 	cycle = 0
 
-	while cycle < datasize do
+	while cycle < data.length do
 
 		while i - 1 >= cycle do
 			r = data[i]
@@ -19,7 +15,7 @@ def bubblesort(data)
 		end
 
 		cycle = cycle + 1
-		i = datasize - 1
+		i = data.length - 1
 	end
 
 	return data
@@ -31,7 +27,10 @@ def swap(arr, xi, yi)
 	arr[yi] = tmp
 end
 
-res = bubblesort(data)
+
+
+data = [1,9,2,7,4]
+bubblesort(data)
 
 i = 0
 while i < 5 do

@@ -27,6 +27,7 @@ import minil.MinilValue.ValueType;
 import minil.NodeEvaluator.StmtEvaResult;
 import minil.ast.ArrayElemLetNode;
 import minil.ast.ArrayElemRefNode;
+import minil.ast.ArrayLengthNode;
 import minil.ast.ArrayNode;
 import minil.ast.BinOpNode;
 import minil.ast.BreakNode;
@@ -269,6 +270,12 @@ public class NodeEvaluator implements NodeVisitor<MinilValue, StmtEvaResult> {
     public StmtEvaResult visit(ExprStmtNode n) {
         n.getExpr().accept(this); // Just evaluate the expression
         return new StmtEvaResult(ExprStmtNode.class);
+    }
+
+    @Override
+    public MinilValue visit(ArrayLengthNode n) {
+        ArrayList<MinilValue> arr = n.getArrname().accept(this).asArray();
+        return new MinilValue(ValueType.INT, arr.size());
     }
 
 }

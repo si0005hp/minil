@@ -91,6 +91,7 @@ expr returns [ExprNode n]
 	| arrElem                { $n = $arrElem.n; }
 	| var                    { $n = $var.n; }
 	| LPAREN expr RPAREN     { $n = $expr.n; }
+	| var '.' LENGTH         { $n = new ArrayLengthNode($var.n); }
 	;
 
 arrElem returns [ArrayElemRefNode n]
@@ -111,6 +112,7 @@ ELSE : 'else' ;
 WHILE : 'while' ;
 DO : 'do' ;
 BREAK : 'break' ;
+LENGTH : 'length' ;
 
 MUL : '*' ;
 DIV : '/' ;

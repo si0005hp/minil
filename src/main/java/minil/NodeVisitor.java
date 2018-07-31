@@ -2,6 +2,7 @@ package minil;
 
 import minil.ast.ArrayElemLetNode;
 import minil.ast.ArrayElemRefNode;
+import minil.ast.ArrayLengthNode;
 import minil.ast.ArrayNode;
 import minil.ast.BinOpNode;
 import minil.ast.BreakNode;
@@ -27,6 +28,7 @@ public interface NodeVisitor<E, S> {
     E visit(StrNode n);
     E visit(ArrayNode n);
     E visit(ArrayElemRefNode n);
+    E visit(ArrayLengthNode n);
     // Stmt
     S visit(PrintNode n);
     S visit(VarLetNode n);
