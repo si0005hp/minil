@@ -31,6 +31,7 @@ import minil.ast.ArrayLengthNode;
 import minil.ast.ArrayNode;
 import minil.ast.BinOpNode;
 import minil.ast.BreakNode;
+import minil.ast.ContinueNode;
 import minil.ast.ExprNode;
 import minil.ast.ExprStmtNode;
 import minil.ast.FuncCallNode;
@@ -211,7 +212,8 @@ public class NodeEvaluator implements NodeVisitor<MinilValue, StmtEvaResult> {
         for (StmtNode s : body) {
             StmtEvaResult res = s.accept(this);
             if (res.getStmtType() == ReturnNode.class
-                    || res.getStmtType() == BreakNode.class) {
+                    || res.getStmtType() == BreakNode.class
+                    || res.getStmtType() == ContinueNode.class) {
                 return res;
             }
         }
@@ -231,6 +233,8 @@ public class NodeEvaluator implements NodeVisitor<MinilValue, StmtEvaResult> {
                 if (res.getStmtType() == ReturnNode.class
                         || res.getStmtType() == BreakNode.class) {
                     return res;
+                } else if (res.getStmtType() == ContinueNode.class) {
+                    break;
                 }
             }
         }
@@ -276,6 +280,11 @@ public class NodeEvaluator implements NodeVisitor<MinilValue, StmtEvaResult> {
     public MinilValue visit(ArrayLengthNode n) {
         ArrayList<MinilValue> arr = n.getArrname().accept(this).asArray();
         return new MinilValue(ValueType.INT, arr.size());
+    }
+
+    @Override
+    public StmtEvaResult visit(ContinueNode n) {
+        return StmtEvaResult.of(ContinueNode.class);
     }
 
 }

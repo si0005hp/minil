@@ -82,6 +82,8 @@ public class MainTest {
         assertThat(runAndGetSysout(() -> runF("whilestmt/while1.minil")), is(perNewLine(0, 1, 2)));
         assertThat(runAndGetSysout(() -> runF("whilestmt/while2.minil")), is(perNewLine(0, 1, 2, 3, 4)));
         assertThat(runAndGetSysout(() -> runF("whilestmt/while3.minil")), is(perNewLine(0, 1, 2, 0, 1, 2)));
+        assertThat(runAndGetSysout(() -> runF("whilestmt/while4.minil")), is(perNewLine(1, 3, 4, 5)));
+        assertThat(runAndGetSysout(() -> runF("whilestmt/while5.minil")), is(perNewLine(50)));
     }
     
     @Test

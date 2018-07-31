@@ -1,0 +1,19 @@
+def foo(num)
+	i = 0
+	sum = 0
+	while i < num do
+		i = i + 1
+
+		if i == num / 2
+			continue
+		end
+
+		sum = sum + i
+	end
+
+	return sum
+end 
+
+
+res = foo(10)
+print(res)

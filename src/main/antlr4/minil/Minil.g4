@@ -67,6 +67,7 @@ stmt returns [StmtNode n]
 	  }
 	| WHILE expr DO? stmts[new ArrayList<>()] END  { $n = new WhileNode($expr.n, $stmts.n); }  // while
 	| BREAK                                        { $n = new BreakNode(); }  // break
+	| CONTINUE                                     { $n = new ContinueNode(); }  // break
 	| expr                                         { $n = new ExprStmtNode($expr.n); }  // expr as statement
 	;
 
@@ -112,6 +113,7 @@ ELSE : 'else' ;
 WHILE : 'while' ;
 DO : 'do' ;
 BREAK : 'break' ;
+CONTINUE : 'continue' ;
 LENGTH : 'length' ;
 
 MUL : '*' ;
